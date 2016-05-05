@@ -46,6 +46,13 @@ func main() {
         fmt.Printf("Your event id is %s\n", eventId)
 
         checker := NewChecker(eventId)
-        checker.Check()
+
+        if eventList, err := checker.EventList(); err != nil {
+            fmt.Println(err)
+        }else{
+            for _, event := range eventList {
+                fmt.Printf("%s => %s - %s\n", event.Name, event.Time, event.Status)
+            }
+        }
     }
 }
