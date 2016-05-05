@@ -1,9 +1,48 @@
 package main
 
 import (
+    "os"
     "fmt"
+    "flag"
 )
 
+func usage() {
+    const usage = `Go-Ubx: a simple ubx checking program
+Usage:
+    go-ubx [-e EVENT_ID]
+    go-ubx -h | --help
+Options:
+    -e,             The event id
+    -h, --help      Output help information
+`
+
+    fmt.Printf(usage)
+    os.Exit(0)
+}
+
 func main() {
-    fmt.Println("This is a testing");
+    var eventId string
+    var help bool
+
+    config := NewConfig()
+
+    flag.StringVar(&eventId,    "e",    "",    "The event id")
+    flag.BoolVar(&help,         "h",    false, "Show help message")
+    flag.BoolVar(&help,         "help", false, "Show help message")
+
+    flag.Usage = usage
+
+    flag.Parse()
+
+    if help {
+        usage()
+    }
+
+    config.EventId = eventId
+
+    if _, err := config.Check(); err != nil {
+        fmt.Printf("Arguments error: %s", err)
+    }else{
+        fmt.Printf("Your event id is %s", eventId)
+    }
 }
