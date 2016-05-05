@@ -43,6 +43,9 @@ func main() {
     if _, err := config.Check(); err != nil {
         fmt.Printf("Arguments error: %s", err)
     }else{
-        fmt.Printf("Your event id is %s", eventId)
+        fmt.Printf("Your event id is %s\n", eventId)
+
+        checker := NewChecker(eventId)
+        checker.Check()
     }
 }
