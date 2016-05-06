@@ -47,7 +47,7 @@ type Checker struct {
     EventId string
     Agent   *gorequest.SuperAgent
     PerPage int
-    PageNo  int
+    Events  []EventList
 }
 
 func NewChecker(eventId string) *Checker {
@@ -55,7 +55,7 @@ func NewChecker(eventId string) *Checker {
         EventId: eventId,
         Agent  : gorequest.New(),
         PerPage: 5,
-        PageNo : 1,
+        Events : []EventList{},
     }
 }
 
@@ -64,7 +64,7 @@ func (c Checker) EventList() ([]EventList, error) {
         return nil, err
     }
 
-    if eventList, err := c.fetchEvent(); err != nil {
+    if eventList, err := c.fetchEvent(1); err != nil {
         return nil, err
     }else{
         return eventList, nil
@@ -94,11 +94,9 @@ func (c Checker) fetchAuth() (string, error) {
     return body, nil
 }
 
-func (c Checker) fetchEvent() ([]EventList, error) {
-    var eventList []EventList
-
+func (c *Checker) fetchEvent(pageNo int) ([]EventList, error) {
     timestamp := time.Now().Unix()
-    targetUrl := fmt.Sprintf("https://ticket.urbtix.hk/internet/json/event/%s/performance/%d/%d/perf.json?locale=zh_TW&%d", c.EventId, c.PerPage, c.PageNo, timestamp)
+    targetUrl := fmt.Sprintf("https://ticket.urbtix.hk/internet/json/event/%s/performance/%d/%d/perf.json?locale=zh_TW&%d", c.EventId, c.PerPage, pageNo, timestamp)
 
     _, body, errs := c.Agent.Get(targetUrl).
         Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8").
@@ -108,24 +106,28 @@ func (c Checker) fetchEvent() ([]EventList, error) {
         End()
 
     if errs != nil {
-        return eventList, errs[0]
+        return c.Events, errs[0]
     }
 
     performanceData := &PerformanceData{}
 
     if err := json.Unmarshal([]byte(body), performanceData); err != nil {
-        return eventList, err
+        return c.Events, err
     }else{
         for k, v := range performanceData.PerformanceList {
             timeString := time.Unix(v.PerformanceDateTime/1000, 0).Format(time.RFC3339)
 
-            eventList = append(eventList, EventList{
+            c.Events = append(c.Events, EventList{
                 Name  : v.PerformanceName,
                 Time  : timeString,
                 Status: performanceData.StatusList[k],
             })
         }
 
-        return eventList, nil
+        if len(performanceData.PerformanceList) > 0 {
+            return c.fetchEvent(pageNo + 1)
+        }else{
+            return c.Events, nil
+        }
     }
 }
