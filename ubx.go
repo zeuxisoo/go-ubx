@@ -61,7 +61,7 @@ func main() {
             fmt.Println(err)
         }else{
             for _, event := range eventList {
-                fmt.Printf("%s => %s - %s\n", event.Name, event.Time, event.Status)
+                color.White("%s => %s - %s\n", event.Name, event.Time, event.Status)
             }
         }
     }
