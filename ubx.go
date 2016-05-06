@@ -44,13 +44,12 @@ func main() {
     config.EventId = eventId
 
     if _, err := config.Check(); err != nil {
-        fmt.Printf("Arguments error: %s", err)
+        color.Red("Arguments error: %s", err)
     }else{
         color.Set(color.FgBlue)
         color.Set(color.Bold)
         banner.Print("ubx checker")
         color.Unset()
-
 
         color.Green("\nYour event id: %s\n", eventId)
         color.Magenta("\nRelated events\n\n")
