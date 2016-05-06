@@ -3,3 +3,6 @@ all:
 
 run:
 	@go run *.go
+
+build:
+	@bash ./scripts/build.sh
