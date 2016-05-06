@@ -4,6 +4,9 @@ import (
     "os"
     "fmt"
     "flag"
+
+    "github.com/CrowdSurge/banner"
+    "github.com/fatih/color"
 )
 
 func usage() {
@@ -43,7 +46,14 @@ func main() {
     if _, err := config.Check(); err != nil {
         fmt.Printf("Arguments error: %s", err)
     }else{
-        fmt.Printf("Your event id is %s\n", eventId)
+        color.Set(color.FgBlue)
+        color.Set(color.Bold)
+        banner.Print("ubx checker")
+        color.Unset()
+
+
+        color.Green("\nYour event id: %s\n", eventId)
+        color.Magenta("\nRelated events\n\n")
 
         checker := NewChecker(eventId)
 
