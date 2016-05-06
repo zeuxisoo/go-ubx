@@ -9,6 +9,10 @@ import (
     "github.com/fatih/color"
 )
 
+var (
+    version = "0.1.0"
+)
+
 func usage() {
     const usage = `Go-Ubx: a simple ubx checking program
 Usage:
@@ -51,7 +55,10 @@ func main() {
         banner.Print("ubx checker")
         color.Unset()
 
-        color.Green("\nYour event id: %s\n", eventId)
+        fmt.Println()
+
+        color.Yellow("Current version: %s", version)
+        color.Green("Target event id: %s\n", eventId)
         color.Magenta("\nRelated events\n\n")
 
         checker := NewChecker(eventId)
