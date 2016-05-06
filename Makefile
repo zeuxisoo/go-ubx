@@ -1,8 +1,5 @@
 all:
-	@echo "make run"
-
-run:
-	@go run *.go
+	@echo "make build"
 
 build:
 	@bash ./scripts/build.sh
